@@ -18,8 +18,21 @@ app:
     - "--master"
     - "--die-on-term"
 
+test:
+  image: zee7han/todobackend-specs
+  links:
+    - nginx
+  environment:
+    URL: http://nginx:8000/todos
+    JUNIT_REPORT_PATH: /reports/acceptance.xml
+    JUNIT_REPORT_STACK: 1
+  command: --reporter mocha-jenkins-reporter
+
+
 nginx:
   image: nginx
+  links:
+    - app
   volumes:
     - ./todobackend.conf:/etc/nginx/conf.d/todobackend.conf
   ports:
@@ -45,7 +58,7 @@ db:
     MYSQL_ROOT_PASSWORD: password
 
 agent:
-  image: jmenga/ansible
+  image: zee7han/ansible
   links:
     - db
   environment:
